@@ -16,11 +16,19 @@ function geturl(req,res) {
 
 function checkUrl(url) {
 	var localfileRegEx = /^(\/LOCALFILE\/)([a-zA-Z0-9\-\_\~])*(\/[a-zA-z0-9\-\_\~]*)*(\.)([a-zA-Z0-9]*)$/;
+	var hostRegEx = /(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)+([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])/;
+	var filepathRegEx = /([a-zA-Z0-9\-\_\~])*(\/[a-zA-z0-9\-\_\~]*)*(\.)([a-zA-Z0-9]*)$/;
+	var remoteFileRegEx = /^(\/REMOTEFILE\/)/;
+	var remoteFileTotalRegEx = new RegExp(remoteFileRegEx + hostRegEx + filepathRegEx);
 	if(localfileRegEx.test(url)) {
 		console.log("Accepted");
 	}
+	else if (remoteFileTotalRegEx.test(url)) {
+		console.log("Accepted remoteFile");
+	}
 	else {
 		console.log("Rejected");
+		console.log(remoteFileTotalRegEx);
 	}
 }
 
