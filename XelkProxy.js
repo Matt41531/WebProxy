@@ -1,3 +1,4 @@
+//Matthew Rife
 var http = require('http');
 var XelkReq = require('/homes/paul/HTML/CS316/P3_Req.js');
 
@@ -15,18 +16,26 @@ function geturl(req,res) {
 }
 
 function checkUrl(url) {
-	var localfileRegEx = "^(\/LOCALFILE\/)([a-zA-Z0-9\-\_\~])*(\/[a-zA-z0-9\-\_\~]*)*(\.)([a-zA-Z0-9]*)$";
+	//var localfileRegEx = "^(\/LOCALFILE\/)([a-zA-Z0-9\-\_\~])*(\/[a-zA-z0-9\-\_\~]*)*(\.)([a-zA-Z0-9]*)$";
+	var localFileRegEx = "^(\/LOCALFILE\/)";
 	var hostRegEx = "(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)+([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])";
 	var filepathRegEx = "([a-zA-Z0-9\-\_\~])*(\/[a-zA-z0-9\-\_\~]*)*(\.)([a-zA-Z0-9]*)$";
 	var remoteFileRegEx = "^(\/REMOTEFILE\/)";
-	var remoteFileTotalRegEx = new RegExp(remoteFileRegEx + hostRegEx + filepathRegEx);
-	var fullRegExCombination = new RegExp(localfileRegEx + "|" + remoteFileTotalRegEx);
-
+	var cgiRegEx = "([a-zA-Z0-9\-\_])*(\/[a-zA-z0-9\-\_]*)*(\.)(cgi)$"
+	var localExecRegEx = "^(\/LOCALEXEC\/)";
+	var remoteExecRegEx = "^(\/REMOTEEXEC\/)";
+	var remoteFileFinalRegEx = remoteFileRegEx + hostRegEx + filepathRegEx;
+	var remoteExecFinalRegEx = remoteExecRegEx + hostRegEx + cgiRegEx;
+	var localFileFinalRegEx = localFileRegEx + filepathRegEx;
+	var localExecFinalRegEx = localExecRegEx + cgiRegEx;
+	var fullRegExCombination = new RegExp(localFileFinalRegEx + "|" + remoteFileFinalRegEx + "|" + remoteExecFinalRegEx + "|" + localExecFinalRegEx);
 	if(fullRegExCombination.test(url)) {
 		console.log("Accepted");
 	}
 	else {
 		console.log("Rejected");
+		console.log(fullRegExCombination);
+		console.log(localFileFinalRegEx);
 	}
 }
 
