@@ -3,7 +3,7 @@ var http = require('http');
 var XelkReq = require('/homes/paul/HTML/CS316/P3_Req.js');
 
 const hostname = 'iris.cs.uky.edu';
-const port = 3300;
+const port = generatePort();
 const server = http.createServer(geturl);
 
 function geturl(req,res) {
@@ -39,6 +39,11 @@ function checkUrl(url) {
 	}
 }
 
+
+function generatePort() {
+	var port = Math.floor(Math.random() * (+XelkReq.UpperPort() - +XelkReq.LowerPort()) + +XelkReq.LowerPort());
+	return port;
+}
 
 server.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
