@@ -49,12 +49,14 @@ function checkUrl(url) {
 		if(remoteFileFinalRegEx.test(url)) {
 			//Do stuff
 			console.log("Remote File");
+			checkExtension(url);
 		}
 		else if(remoteExecFinalRegEx.test(url)) {
 			console.log("Remote exec");
 		}
 		else if(localFileFinalRegEx.test(url)) {
 			console.log("Local file");
+			checkExtension(url);
 		}
 		else {
 			console.log("Local Exec");
@@ -64,6 +66,24 @@ function checkUrl(url) {
 		
 }
 
+function checkExtension(url) {
+	var extensionIsValid = false;
+	var validExtensions = XelkReq.extAllowed();
+	for(var i = 0; i<validExtensions.length; i++) {
+		var extensionToCheck = validExtensions[i][0];
+		extensionToCheck = new RegExp(extensionToCheck + "$");
+		if(extensionToCheck.test(url)){
+			extensionIsValid = true;
+		}
+	}
+
+	if(extensionIsValid) {
+		console.log("Valid extension");
+	}
+	else {
+		console.log("Invalid extension");
+	}
+}
 
 function generatePort() {
 	var port = Math.floor(Math.random() * (+XelkReq.UpperPort() - +XelkReq.LowerPort()) + +XelkReq.LowerPort());
