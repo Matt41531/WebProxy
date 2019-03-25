@@ -16,7 +16,7 @@ function geturl(req,res) {
 }
 
 function checkUrl(url) {
-	//var localfileRegEx = "^(\/LOCALFILE\/)([a-zA-Z0-9\-\_\~])*(\/[a-zA-z0-9\-\_\~]*)*(\.)([a-zA-Z0-9]*)$";
+	var accepted = false;
 	var localFileRegEx = "^(\/LOCALFILE\/)";
 	var hostRegEx = "(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)+([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])";
 	var filepathRegEx = "([a-zA-Z0-9\-\_\~])*(\/[a-zA-z0-9\-\_\~]*)*(\.)([a-zA-Z0-9]*)$";
@@ -31,12 +31,37 @@ function checkUrl(url) {
 	var fullRegExCombination = new RegExp(localFileFinalRegEx + "|" + remoteFileFinalRegEx + "|" + remoteExecFinalRegEx + "|" + localExecFinalRegEx);
 	if(fullRegExCombination.test(url)) {
 		console.log("Accepted");
+		accepted = true;
 	}
 	else {
 		console.log("Rejected");
 		console.log(fullRegExCombination);
 		console.log(localFileFinalRegEx);
 	}
+	
+	if(accepted) {
+		//Figure out which one it passed
+		//Turn all strings into regular expressions
+		remoteFileFinalRegEx = new RegExp(remoteFileFinalRegEx);
+		remoteExecFinalRegEx = new RegExp(remoteExecFinalRegEx);
+		localFileFinalRegEx = new RegExp(localFileFinalRegEx);
+		localExecFinalRegEx = new RegExp(localExecFinalRegEx);
+		if(remoteFileFinalRegEx.test(url)) {
+			//Do stuff
+			console.log("Remote File");
+		}
+		else if(remoteExecFinalRegEx.test(url)) {
+			console.log("Remote exec");
+		}
+		else if(localFileFinalRegEx.test(url)) {
+			console.log("Local file");
+		}
+		else {
+			console.log("Local Exec");
+		}
+	}
+	
+		
 }
 
 
