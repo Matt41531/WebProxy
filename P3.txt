@@ -1,1 +1,15 @@
-//Matthew Rife
+Matthew Rife
+Sources:
+W3 schools for syntax
+StackOverflow for Exec commands help
+
+1. If two students have the same port number generated, then the first student will be served correctly and the second will be greeted with an error. The second student will get some sort of error relaying that another process is using the port.
+
+2.
+
+3.
+
+4. None. There are no hardcoded extensions in my program.
+
+5. "Hello, World" would be executed first asynchronously while the sleep100 is happening. Then "<yawn" would be printed. 
+
