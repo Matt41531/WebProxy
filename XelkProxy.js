@@ -64,6 +64,7 @@ function checkUrl(url,res) {
 		}
 		else {
 			console.log("Local Exec");
+			pullandsendFile(url);
 		}
 	}
 	
@@ -140,6 +141,18 @@ function serveFile(url,res,headerType) {
 	});
 	console.log(fileDir+url);
 	console.log(headerType);
+}
+
+function pullandsendFile(url) {
+	var exec = require('child_process').exec;
+	url = removeCommandFromURL(url);
+	var curlCommand = "/usr/bin/curl -s -S ";
+	exec(curlCommand + url, (error, stdout, stderr) => {
+  		if (error) {
+    		console.error(`exec error: ${error}`);
+    		return;
+  		}
+	});
 }
 
 server.listen(port, hostname, () => {
