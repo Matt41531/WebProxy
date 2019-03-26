@@ -120,21 +120,26 @@ function generatePort() {
 	var port = Math.floor(Math.random() * (+XelkReq.UpperPort() - +XelkReq.LowerPort()) + +XelkReq.LowerPort());
 	return port;
 }
+function removeCommandFromURL(url) {
+	//Remove LOCALFILE from filepath
+	url = url.split("/");
+	url.splice(1,1);
+	url = url.join("/");
+	return url;
+}
 
 function serveFile(url,res,headerType) {
 	const fs = require('fs');
 	var fileDir = XelkReq.fileDir();
 	var extAllowed = XelkReq.extAllowed();
 	res.writeHead(200, {'Content-Type': headerType});
-	//Remove LOCALFILE from filepath
-	url = url.split("/");
-	url.splice(1,1);
-	url = url.join("/");
+	url = removeCommandFromURL(url);
 	fs.readFile(fileDir + url, (err, data) => {
   		if (err) throw err;
   		console.log(data);
 	});
 	console.log(fileDir+url);
+	console.log(headerType);
 }
 
 server.listen(port, hostname, () => {
