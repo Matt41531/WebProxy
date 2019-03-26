@@ -10,7 +10,7 @@ const server = http.createServer(geturl);
 function geturl(req,res) {
 	res.writeHead(200, {'Content-Type': 'text/plain'});
 	res.write('Proxy running...');
-	res.end();
+	res.end()
 	checkUrl(req.url, res);
 
 }
@@ -21,7 +21,7 @@ function checkUrl(url,res) {
 	var hostRegEx = "(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)+([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])";
 	var filepathRegEx = "([a-zA-Z0-9\-\_\~])*(\/[a-zA-z0-9\-\_\~]*)*(\.)([a-zA-Z0-9]*)$";
 	var remoteFileRegEx = "^(\/REMOTEFILE\/)";
-	var cgiRegEx = "([a-zA-Z0-9\-\_])*(\/[a-zA-z0-9\-\_]*)*(\.)(cgi)$"
+	var cgiRegEx = "([a-zA-Z0-9\-\_\~])*(\/[a-zA-z0-9\-\_\~]*)*(\.)(cgi)$"
 	var localExecRegEx = "^(\/LOCALEXEC\/)";
 	var remoteExecRegEx = "^(\/REMOTEEXEC\/)";
 	var remoteFileFinalRegEx = remoteFileRegEx + hostRegEx + filepathRegEx;
@@ -30,7 +30,6 @@ function checkUrl(url,res) {
 	var localExecFinalRegEx = localExecRegEx + cgiRegEx;
 	var fullRegExCombination = new RegExp(localFileFinalRegEx + "|" + remoteFileFinalRegEx + "|" + remoteExecFinalRegEx + "|" + localExecFinalRegEx);
 	if(fullRegExCombination.test(url)) {
-		console.log("Accepted");
 		accepted = true;
 	}
 	else {
@@ -49,11 +48,16 @@ function checkUrl(url,res) {
 			console.log("DEBUG: Remote File");
 			var fileExtension = checkExtension(url);
 			if(fileExtension) {
+				console.log("Accepted");
 				pullandsendFile(url);
+			}
+			else {
+				console.log("Rejected: Invalid extension");
 			}
 
 		}
 		else if(remoteExecFinalRegEx.test(url)) {
+			console.log("Accepted");
 			console.log("DEBUG: Remote exec");
 			pullandsendOutput(url);
 		}
@@ -61,14 +65,20 @@ function checkUrl(url,res) {
 			console.log("DEBUG: Local file");
 			var fileExtension = checkExtension(url);
 			if(fileExtension) {
+				console.log("Accepted");
 				var headerType = getHeaderType(fileExtension);
 				serveFile(url,res,headerType);
 			}
+			else {
+				console.log("Rejected: Invalid extension");
+			}
 		}
 		else {
+			console.log("Accepted");
 			console.log("DEBUG: Local Exec");
 			serveCGI(url);
 		}
+		
 	}	
 }
 
@@ -164,7 +174,8 @@ function pullandsendFile(url) {
 	var exec = require('child_process').exec;
 	url = removeCommandFromURL(url);
 	var curlCommand = "/usr/bin/curl -s -S ";
-	exec(curlCommand + url, (error, stdout, stderr) => {
+	var http = "http://";
+	exec(curlCommand + http + url, (error, stdout, stderr) => {
   		if (error) {
     			console.error(`exec error: ${error}`);
     			return;
@@ -179,7 +190,8 @@ function pullandsendOutput(url) {
 	var exec = require('child_process').exec;
 	url = removeCommandFromURL(url);
 	var curlCommand = "/usr/bin/curl -s -S ";
-	exec(curlCommand + url, (error, stdout, stderr) => {
+	var http = "http://";
+	exec(curlCommand + http + url, (error, stdout, stderr) => {
   		if (error) {
     			console.error(`exec error: ${error}`);
     			return;
