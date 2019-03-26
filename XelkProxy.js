@@ -1,4 +1,5 @@
 //Matthew Rife
+//PURPOSE: Create a proxy server to serve local files, local CGIs, remote files, and remote CGIs
 var http = require('http');
 var XelkReq = require('/homes/paul/HTML/CS316/P3_Req.js');
 
@@ -8,9 +9,8 @@ const server = http.createServer(geturl);
 
 function geturl(req,res) {
 	res.writeHead(200, {'Content-Type': 'text/plain'});
-	res.write('Hello World!');
+	res.write('Proxy running...');
 	res.end();
-	console.log(req.url);
 	checkUrl(req.url, res);
 
 }
@@ -35,8 +35,6 @@ function checkUrl(url,res) {
 	}
 	else {
 		console.log("Rejected");
-		console.log(fullRegExCombination);
-		console.log(localFileFinalRegEx);
 	}
 	
 	if(accepted) {
@@ -48,7 +46,7 @@ function checkUrl(url,res) {
 		localExecFinalRegEx = new RegExp(localExecFinalRegEx);
 		if(remoteFileFinalRegEx.test(url)) {
 			//Do stuff
-			console.log("Remote File");
+			console.log("DEBUG: Remote File");
 			var fileExtension = checkExtension(url);
 			if(fileExtension) {
 				pullandsendFile(url);
@@ -56,10 +54,11 @@ function checkUrl(url,res) {
 
 		}
 		else if(remoteExecFinalRegEx.test(url)) {
-			console.log("Remote exec");
+			console.log("DEBUG: Remote exec");
+			pullandsendOutput(url);
 		}
 		else if(localFileFinalRegEx.test(url)) {
-			console.log("Local file");
+			console.log("DEBUG: Local file");
 			var fileExtension = checkExtension(url);
 			if(fileExtension) {
 				var headerType = getHeaderType(fileExtension);
@@ -67,7 +66,7 @@ function checkUrl(url,res) {
 			}
 		}
 		else {
-			console.log("Local Exec");
+			console.log("DEBUG: Local Exec");
 			serveCGI(url);
 		}
 	}	
@@ -151,10 +150,14 @@ function serveCGI(url) {
 	var execDir = XelkReq.execDir();
 	exec(execDir + url, (error, stdout, stderr) => {
   		if (error) {
-    		console.error(`exec error: ${error}`);
-    		return;
+    			console.error(`exec error: ${error}`);
+    			return;
   		}
+		else {
+			console.log(stdout);
+		}
 	});
+	
 }
 
 function pullandsendFile(url) {
@@ -163,11 +166,30 @@ function pullandsendFile(url) {
 	var curlCommand = "/usr/bin/curl -s -S ";
 	exec(curlCommand + url, (error, stdout, stderr) => {
   		if (error) {
-    		console.error(`exec error: ${error}`);
-    		return;
+    			console.error(`exec error: ${error}`);
+    			return;
   		}
+		else {
+			console.log(stdout);
+		}
 	});
 }
+
+function pullandsendOutput(url) {
+	var exec = require('child_process').exec;
+	url = removeCommandFromURL(url);
+	var curlCommand = "/usr/bin/curl -s -S ";
+	exec(curlCommand + url, (error, stdout, stderr) => {
+  		if (error) {
+    			console.error(`exec error: ${error}`);
+    			return;
+  		}
+		else {
+			console.log(stdout);
+		}
+	});
+}
+
 
 server.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
