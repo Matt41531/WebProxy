@@ -49,7 +49,11 @@ function checkUrl(url,res) {
 		if(remoteFileFinalRegEx.test(url)) {
 			//Do stuff
 			console.log("Remote File");
-			checkExtension(url);
+			var fileExtension = checkExtension(url);
+			if(fileExtension) {
+				pullandsendFile(url);
+			}
+
 		}
 		else if(remoteExecFinalRegEx.test(url)) {
 			console.log("Remote exec");
@@ -64,11 +68,9 @@ function checkUrl(url,res) {
 		}
 		else {
 			console.log("Local Exec");
-			pullandsendFile(url);
+			serveCGI(url);
 		}
-	}
-	
-		
+	}	
 }
 
 function checkExtension(url) {
@@ -141,6 +143,18 @@ function serveFile(url,res,headerType) {
 	});
 	console.log(fileDir+url);
 	console.log(headerType);
+}
+
+function serveCGI(url) {
+	var exec = require('child_process').exec;
+	url = removeCommandFromURL(url);
+	var execDir = XelkReq.execDir();
+	exec(execDir + url, (error, stdout, stderr) => {
+  		if (error) {
+    		console.error(`exec error: ${error}`);
+    		return;
+  		}
+	});
 }
 
 function pullandsendFile(url) {
