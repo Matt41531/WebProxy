@@ -2,10 +2,11 @@ Matthew Rife
 Sources:
 W3 schools for syntax
 StackOverflow for Exec commands help
+RegExTester when testing Reg Expressions
 
 1. If two students have the same port number generated, then the first student will be served correctly and the second will be greeted with an error. The second student will get some sort of error relaying that another process is using the port.
 
-2.
+2. Port numbers 0 to 1024 are reserved for privileged services and designated as well-known ports. A connection would not be made as the ports are occupied.
 
 3.
 
