@@ -8,9 +8,9 @@ RegExTester when testing Reg Expressions
 
 2. Port numbers 0 to 1024 are reserved for privileged services and designated as well-known ports. A connection would not be made as the ports are occupied.
 
-3.
+3. Well, gaming servers don't randomly generate port numbers, as they have a steady set of ports reserved. From this information, I would assume port randomization is not useful when the server needs to know who each person is and also would be not plausible for games with more than 65535 players.
 
 4. None. There are no hardcoded extensions in my program.
 
-5. "Hello, World" would be executed first asynchronously while the sleep100 is happening. Then "<yawn" would be printed. 
+5. "Hello, World" and "<yawn>" will be printed immediately, then the sleep will happen because it all takes place asynchronously(sp?). 
 

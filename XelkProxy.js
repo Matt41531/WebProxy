@@ -8,6 +8,7 @@ const port = generatePort();
 const server = http.createServer(geturl);
 
 function geturl(req,res) {
+	console.log("Client requested: " + req.url);
 	checkUrl(req.url, res);
 }
 
@@ -91,15 +92,6 @@ function checkExtension(url) {
 			var finalExtension = extensionToCheck;
 		}
 	}
-
-	if(extensionIsValid) {
-		console.log("Valid extension");
-		
-	}
-	else {
-		console.log("Invalid extension");
-	}
-
 	return finalExtension;
 
 }
@@ -144,8 +136,13 @@ function serveFile(url,res,headerType) {
 	res.writeHead(200, { 'Content-Type': headerType});
 	url = removeCommandFromURL(url);
 	fs.readFile(fileDir + url,"utf8", (err, data) => {
-  		if (err) throw err;	
-		res.end(data);
+  		if (err) {
+			res.statusCode = 403;
+			res.end(err);	
+		}
+		else {
+			res.end(data);
+		}
 	});
 }
 
@@ -156,11 +153,10 @@ function serveCGI(url, res) {
 	exec(execDir + url, (error, stdout, stderr) => {
   		if (error) {
     			console.error(`exec error: ${error}`);
-			res.status(403).end();
-    			return;
+			res.statusCode = 403;
+			res.end(error);
   		}
-		else {
-			console.log(stdout);
+		else {	
 			res.end(stdout);
 		}
 	});
@@ -176,10 +172,10 @@ function pullandsendFile(url, res, headerType) {
 	exec(curlCommand + http + url, (error, stdout, stderr) => {
   		if (error) {
     			console.error(`exec error: ${error}`);
-			res.status(403).end();
+			res.statusCode = 403;
+			res.end(error);
   		}
 		else {
-			console.log(stdout);
 			res.end(stdout);
 		}
 	});
@@ -194,10 +190,10 @@ function pullandsendOutput(url, res) {
 	exec(curlCommand + http + url, (error, stdout, stderr) => {
   		if (error) {
     			console.error(`exec error: ${error}`);
-			res.status(403).end();
+			res.statusCode = 403;
+			res.end(error);
   		}
 		else {
-			console.log(stdout);
 			res.end(stdout);
 		}
 	});
