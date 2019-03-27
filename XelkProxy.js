@@ -8,11 +8,8 @@ const port = generatePort();
 const server = http.createServer(geturl);
 
 function geturl(req,res) {
-	res.writeHead(200, {'Content-Type': 'text/plain'});
 	res.write('Proxy running...');
-	res.end()
 	checkUrl(req.url, res);
-
 }
 
 function checkUrl(url,res) {
@@ -78,6 +75,7 @@ function checkUrl(url,res) {
 			console.log("DEBUG: Local Exec");
 			serveCGI(url);
 		}
+
 		
 	}	
 }
@@ -146,9 +144,11 @@ function serveFile(url,res,headerType) {
 	var extAllowed = XelkReq.extAllowed();
 	res.writeHead(200, {'Content-Type': headerType});
 	url = removeCommandFromURL(url);
-	fs.readFile(fileDir + url, (err, data) => {
+	fs.readFile(fileDir + url,"utf8", (err, data) => {
   		if (err) throw err;
   		console.log(data);
+		res.write(data);
+		res.end();
 	});
 	console.log(fileDir+url);
 	console.log(headerType);
