@@ -8,7 +8,6 @@ const port = generatePort();
 const server = http.createServer(geturl);
 
 function geturl(req,res) {
-	res.write('Proxy running...');
 	checkUrl(req.url, res);
 }
 
@@ -46,7 +45,8 @@ function checkUrl(url,res) {
 			var fileExtension = checkExtension(url);
 			if(fileExtension) {
 				console.log("Accepted");
-				pullandsendFile(url);
+				var headerType = getHeaderType(fileExtension);
+				pullandsendFile(url, res, headerType);
 			}
 			else {
 				console.log("Rejected: Invalid extension");
@@ -56,7 +56,7 @@ function checkUrl(url,res) {
 		else if(remoteExecFinalRegEx.test(url)) {
 			console.log("Accepted");
 			console.log("DEBUG: Remote exec");
-			pullandsendOutput(url);
+			pullandsendOutput(url, res);
 		}
 		else if(localFileFinalRegEx.test(url)) {
 			console.log("DEBUG: Local file");
@@ -73,7 +73,7 @@ function checkUrl(url,res) {
 		else {
 			console.log("Accepted");
 			console.log("DEBUG: Local Exec");
-			serveCGI(url);
+			serveCGI(url, res);
 		}
 
 		
@@ -141,63 +141,64 @@ function removeCommandFromURL(url) {
 function serveFile(url,res,headerType) {
 	const fs = require('fs');
 	var fileDir = XelkReq.fileDir();
-	var extAllowed = XelkReq.extAllowed();
-	res.writeHead(200, {'Content-Type': headerType});
+	res.writeHead(200, { 'Content-Type': headerType});
 	url = removeCommandFromURL(url);
 	fs.readFile(fileDir + url,"utf8", (err, data) => {
-  		if (err) throw err;
-  		console.log(data);
-		res.write(data);
-		res.end();
+  		if (err) throw err;	
+		res.end(data);
 	});
-	console.log(fileDir+url);
-	console.log(headerType);
 }
 
-function serveCGI(url) {
+function serveCGI(url, res) {
 	var exec = require('child_process').exec;
 	url = removeCommandFromURL(url);
 	var execDir = XelkReq.execDir();
 	exec(execDir + url, (error, stdout, stderr) => {
   		if (error) {
     			console.error(`exec error: ${error}`);
+			res.status(403).end();
     			return;
   		}
 		else {
 			console.log(stdout);
+			res.end(stdout);
 		}
 	});
 	
 }
 
-function pullandsendFile(url) {
+function pullandsendFile(url, res, headerType) {
 	var exec = require('child_process').exec;
 	url = removeCommandFromURL(url);
+	res.writeHead(200, {"Content-Type": headerType});
 	var curlCommand = "/usr/bin/curl -s -S ";
 	var http = "http://";
 	exec(curlCommand + http + url, (error, stdout, stderr) => {
   		if (error) {
     			console.error(`exec error: ${error}`);
-    			return;
+			res.status(403).end();
   		}
 		else {
 			console.log(stdout);
+			res.end(stdout);
 		}
 	});
 }
 
-function pullandsendOutput(url) {
+function pullandsendOutput(url, res) {
 	var exec = require('child_process').exec;
 	url = removeCommandFromURL(url);
+	//res.writeHead(200, {"Content-Type": headerType});
 	var curlCommand = "/usr/bin/curl -s -S ";
 	var http = "http://";
 	exec(curlCommand + http + url, (error, stdout, stderr) => {
   		if (error) {
     			console.error(`exec error: ${error}`);
-    			return;
+			res.status(403).end();
   		}
 		else {
 			console.log(stdout);
+			res.end(stdout);
 		}
 	});
 }
